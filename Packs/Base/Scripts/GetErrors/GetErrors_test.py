@@ -1,5 +1,6 @@
-from GetErrors import get_errors
-from CommonServerPython import entryTypes  # noqa: F401
+from GetErrors import get_errors, main
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import entryTypes, CommandResults  # noqa: F401
 
 
 ERROR_ENTRY_1 = [{'Contents': 'This is the error message 1', 'Type': entryTypes['error']}]
@@ -16,6 +17,39 @@ WITHOUT_ERROR_ENTRIES = [
     STD_ENTRY,
     STD_ENTRY
 ]
+
+
+def test_main(mocker):
+    """
+    Tests the full flow of the script
+
+
+    Given:
+        - Entries data
+
+    When:
+        - Two are for error entries and one is for a standard entry
+
+    Then:
+        - Verify the two error entries' contents are returned
+    """
+    mocker.patch.object(demisto, 'args',
+                        return_value={'entry_id': ['err_entry_id_1', 'err_entry_id_2', 'std_entry_id_1']})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=ERROR_ENTRIES)
+    demisto_args = mocker.spy(demisto, 'args')
+    demisto_results = mocker.spy(demisto, 'results')
+
+    main()
+
+    demisto_args.assert_called_once()
+    expected_error_msgs = ['This is the error message 1', 'This is the error message 2']
+    expected_results = CommandResults(
+        readable_output='\n'.join(expected_error_msgs),
+        outputs_prefix='ErrorEntries',
+        outputs=expected_error_msgs,
+        raw_response=expected_error_msgs,
+    ).to_context()
+    demisto_results.assert_called_once_with(expected_results)
 
 
 def test_get_errors_with_error_entries():
