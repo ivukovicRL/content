@@ -1,8 +1,9 @@
 from GetErrors import get_errors
+from CommonServerPython import entryTypes  # noqa: F401
 
 
-ERROR_ENTRY_1 = [{'Contents': 'This is the error message 1', 'Type': 4}]
-ERROR_ENTRY_2 = [{'Contents': 'This is the error message 2', 'Type': 4}]
+ERROR_ENTRY_1 = [{'Contents': 'This is the error message 1', 'Type': entryTypes['error']}]
+ERROR_ENTRY_2 = [{'Contents': 'This is the error message 2', 'Type': entryTypes['error']}]
 STD_ENTRY = [{'Contents': 'This is the standard message', 'Type': 0}]
 ERROR_ENTRIES = [
     ERROR_ENTRY_1,

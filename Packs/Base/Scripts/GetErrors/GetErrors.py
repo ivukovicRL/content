@@ -16,8 +16,9 @@ def get_errors(entries):
     for entry in entries:
         assert len(entry) == 1
         entry_details = entry[0]
-        is_error_entry = type(entry_details) == dict and entry_details['Type'] == entryTypes['error']
+        is_error_entry = isinstance(entry_details, dict) and entry_details['Type'] == entryTypes['error']
         if is_error_entry:
+            demisto.debug(f'error entry contents: "{entry_details["Contents"]}"')
             error_messages.append(entry_details['Contents'])
 
     return error_messages
@@ -36,7 +37,6 @@ def main():
             raw_response=error_messages,
         ))
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to fetch errors for the given entry id(s). Problem: {str(e)}')
 
 
